@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS employee(
+    emp_id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    emp_name VARCHAR(40) NOT NULL,
+    emp_dept VARCHAR(30),
+    emp_desgn VARCHAR(30)
+);
+ALTER TABLE IF EXISTS employee ALTER COLUMN emp_id RESTART with 10000;
