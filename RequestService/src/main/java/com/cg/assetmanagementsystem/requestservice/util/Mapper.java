@@ -3,17 +3,15 @@ package com.cg.assetmanagementsystem.requestservice.util;
 import com.cg.assetmanagementsystem.requestservice.dto.RequestDTO;
 import com.cg.assetmanagementsystem.requestservice.entity.Request;
 import com.cg.assetmanagementsystem.requestservice.exception.InvalidRequestException;
-import com.cg.assetmanagementsystem.requestservice.service.RequestServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 @Component
 public class Mapper {
     /*@Autowired
     private RequestServiceImpl requestService;*/
     @Autowired
-    private FetchData fetchData;
+    private DataFetcher dataFetcher;
     public  RequestDTO entityToDTO(Request request) throws InvalidRequestException {
         RequestDTO requestDTO = new RequestDTO(
                 request.getRequestId(),
@@ -21,9 +19,9 @@ public class Mapper {
                 request.getRequestedTill(),
                 request.getStatus()
         );
-        requestDTO.setRequestedFor(fetchData.getFromEmployeeServiceEmployeeWithId(request.getRequestedFor()));
-        requestDTO.setRequestedBy(fetchData.getFromEmployeeServiceEmployeeWithId(request.getRequestedBy()));
-        requestDTO.setRequestedAsset(fetchData.getFromAssetServiceAssetWithId(request.getRequestedAsset()));
+        requestDTO.setRequestedFor(dataFetcher.getFromEmployeeServiceEmployeeWithId(request.getRequestedFor()));
+        requestDTO.setRequestedBy(dataFetcher.getFromEmployeeServiceEmployeeWithId(request.getRequestedBy()));
+        requestDTO.setRequestedAsset(dataFetcher.getFromAssetServiceAssetWithId(request.getRequestedAsset()));
         return requestDTO;
     }
     public Request dtoToEntity(RequestDTO requestDTO){

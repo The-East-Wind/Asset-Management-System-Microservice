@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Validator {
     @Autowired
-    private FetchData fetchData;
+    private DataFetcher dataFetcher;
     public boolean validateRequest(RequestDTO requestDTO) throws InvalidRequestException{
         if(requestDTO.getRequestedFrom()==null
                 ||requestDTO.getRequestedTill()==null
@@ -20,9 +20,9 @@ public class Validator {
         ){
             throw new InvalidRequestException("Error!Invalid Request.Contains one or more null fields");
         }
-        fetchData.getFromEmployeeServiceEmployeeWithId(requestDTO.getRequestedBy().getEmployeeId());
-        fetchData.getFromEmployeeServiceEmployeeWithId(requestDTO.getRequestedFor().getEmployeeId());
-        fetchData.getFromAssetServiceAssetWithId(requestDTO.getRequestedAsset().getAssetId());
+        dataFetcher.getFromEmployeeServiceEmployeeWithId(requestDTO.getRequestedBy().getEmployeeId());
+        dataFetcher.getFromEmployeeServiceEmployeeWithId(requestDTO.getRequestedFor().getEmployeeId());
+        dataFetcher.getFromAssetServiceAssetWithId(requestDTO.getRequestedAsset().getAssetId());
         return true;
     }
 }
