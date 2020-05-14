@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/assets")
-@CrossOrigin
+//@CrossOrigin(origins="http://localhost:4200")
 @Api(value = "Asset Management System Asset Service", produces = "application/json")
 public class AssetController {
     @Autowired

@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/requests")
-@CrossOrigin
+//@CrossOrigin
 @Api(value = "Asset Management System Request Service",produces = "application/json")
 public class RequestController {
     @Autowired

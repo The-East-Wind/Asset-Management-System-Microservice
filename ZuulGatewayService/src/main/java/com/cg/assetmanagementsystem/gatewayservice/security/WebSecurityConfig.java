@@ -15,7 +15,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
-                .regexMatchers(HttpMethod.POST, SecurityConstants.LOGIN_URL).permitAll()
+                .regexMatchers(SecurityConstants.LOGIN_URL,"/employee-service.*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))

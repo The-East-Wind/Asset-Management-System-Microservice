@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/employees",produces = "application/json")
-@CrossOrigin
+//@CrossOrigin(origins = "http://localhost:4200")
 @Api(value = "Asset Management System Employee Service", produces = "application/json")
 public class EmployeeController {
     @Autowired

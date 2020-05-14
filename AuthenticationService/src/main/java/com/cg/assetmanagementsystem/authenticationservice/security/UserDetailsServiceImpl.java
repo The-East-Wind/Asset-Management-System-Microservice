@@ -23,6 +23,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
         ApplicationUser applicationUser = userOptional.get();
-        return new User(applicationUser.getUsername(), applicationUser.getPassword(), Collections.emptyList());
+        return UserDetailsImpl.build(applicationUser);
     }
 }

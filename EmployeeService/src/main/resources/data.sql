@@ -1,10 +1,10 @@
 DELETE FROM employee;
 INSERT INTO employee(emp_name,emp_dept,emp_desgn) VALUES
-('Walter White','AppsEuro','Java Developer'),
+('Walter White','AppsEuro','Employee'),
 ('Jesse Pinkman','AppsEuro','Manager'),
 ('Michael Ermantraut','IT Infra','Admin'),
-('Ignacio Varga','AppsEuro','Database Developer'),
+('Ignacio Varga','AppsEuro','Employee'),
 ('Gustavo Fring','AppsEuro','Manager'),
-('Hector Salamanca','AppsEuro','.NET Developer'),
-('Kimberley Wexler','FS','Java Developer'),
+('Hector Salamanca','AppsEuro','Employee'),
+('Kimberley Wexler','FS','Employee'),
 ('Lydia Rodart Quale','FS','Manager');

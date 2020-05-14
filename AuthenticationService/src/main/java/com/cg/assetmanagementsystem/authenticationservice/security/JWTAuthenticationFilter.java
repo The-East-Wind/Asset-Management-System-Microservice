@@ -2,8 +2,10 @@ package com.cg.assetmanagementsystem.authenticationservice.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.cg.assetmanagementsystem.authenticationservice.dao.UserDAO;
 import com.cg.assetmanagementsystem.authenticationservice.entity.ApplicationUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,9 +49,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         String token = JWT.create()
-                .withSubject(((User) authResult.getPrincipal()).getUsername())
+                .withSubject(((UserDetailsImpl) authResult.getPrincipal()).getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(SECRET.getBytes()));
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        response.addHeader("access-control-expose-headers", "Authorization");
+        response.setContentType("application/json");
+        response.getWriter().write("{\"userId\":"+((UserDetailsImpl) authResult.getPrincipal()).getId()+"}");
     }
 }

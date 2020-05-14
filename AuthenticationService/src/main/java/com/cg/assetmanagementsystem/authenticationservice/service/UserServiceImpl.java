@@ -15,7 +15,7 @@ public class UserServiceImpl implements UserService{
     private UserDAO userDAO;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Override
+    /*@Override
     public void addUsers() {
         List<ApplicationUser> applicationUserList = new ArrayList<>();
         applicationUserList.add(new ApplicationUser("heisenberg",bCryptPasswordEncoder.encode("saymyname")));
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService{
         applicationUserList.add(new ApplicationUser("kim.wexler",bCryptPasswordEncoder.encode("giselle")));
         applicationUserList.add(new ApplicationUser("lydia.quale",bCryptPasswordEncoder.encode("madrigal")));
         userDAO.saveAll(applicationUserList);
-    }
+    }*/
 
     @Override
     public void signUpUser(ApplicationUser user) {
