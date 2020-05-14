@@ -14,11 +14,10 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/requests")
@@ -28,21 +27,25 @@ public class RequestController {
     @Autowired
     private RequestService requestService;
     @Autowired
-    private RestTemplate restTemplate;
+    private Mapper mapper;
+    @Autowired
+    private Validator validator;
     @ApiOperation(value = "GET all pending requests.", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200,message = "Pending Requests fetched successfully."),
+            @ApiResponse(code = 400,message = "No data found in other service."),
             @ApiResponse(code = 500,message = "Fetching data from other services failed.")
     })
     @GetMapping(
             produces = "application/json",
             headers = "Accept=application/json"
     )
-    public List<RequestDTO> getPendingRequests() {
+    public List<RequestDTO> getPendingRequests() throws InvalidRequestException{
         List<Request> pendingRequests = requestService.getPendingRequests();
-        List<RequestDTO> pendingRequestDTOs = pendingRequests.stream()
-                .map(request -> Mapper.entityToDTO(request,restTemplate))
-                .collect(Collectors.toList());
+        List<RequestDTO> pendingRequestDTOs = new ArrayList<>();
+        for(Request pendingRequest:pendingRequests){
+            pendingRequestDTOs.add(mapper.entityToDTO(pendingRequest));
+        }
         return pendingRequestDTOs;
     }
     @ApiOperation(value = "GET request with give ID.")
@@ -56,9 +59,9 @@ public class RequestController {
             produces = "application/json",
             headers = "Accept=application/json"
     )
-    public RequestDTO getRequestWithId(@ApiParam(value = "ID of the request you wish to fetch",required = true) @PathVariable("id") Integer requestId) throws RequestNotFoundException {
+    public RequestDTO getRequestWithId(@ApiParam(value = "ID of the request you wish to fetch",required = true) @PathVariable("id") Integer requestId) throws RequestNotFoundException,InvalidRequestException {
         Request requestWithId = requestService.getRequestWithId(requestId);
-        return Mapper.entityToDTO(requestWithId,restTemplate);
+        return mapper.entityToDTO(requestWithId);
     }
     @ApiOperation(value = "Add a new request.")
     @ApiResponses(value = {
@@ -71,9 +74,9 @@ public class RequestController {
             produces = "application/json"
     )
     public RequestDTO addNewRequest(@ApiParam(value = "The new request to be added.",required = true) @RequestBody RequestDTO newRequest) throws InvalidRequestException {
-        Validator.validateRequest(newRequest,restTemplate);
-        Request newRequestToBeAdded = Mapper.dtoToEntity(newRequest);
-        newRequest =  Mapper.entityToDTO(requestService.addNewRequest(newRequestToBeAdded),restTemplate);
+        validator.validateRequest(newRequest);
+        Request newRequestToBeAdded = mapper.dtoToEntity(newRequest);
+        newRequest =  mapper.entityToDTO(requestService.addNewRequest(newRequestToBeAdded));
         return newRequest;
     }
     @ApiOperation(value = "Update details of existing request")
@@ -96,9 +99,9 @@ public class RequestController {
         if(requestId!=updatedRequest.getRequestId()){
             throw new InvalidRequestException("Id in url path does not match id in request body.");
         }
-        Validator.validateRequest(updatedRequest,restTemplate);
-        Request requestToBeUpdated = Mapper.dtoToEntity(updatedRequest);
-        return Mapper.entityToDTO(requestService.updateRequest(requestToBeUpdated),restTemplate);
+        validator.validateRequest(updatedRequest);
+        Request requestToBeUpdated = mapper.dtoToEntity(updatedRequest);
+        return mapper.entityToDTO(requestService.updateRequest(requestToBeUpdated));
     }
     @ApiOperation(value = "GET report with details about request in the form of an Excel file.")
     @ApiResponses(value = {

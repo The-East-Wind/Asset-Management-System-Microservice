@@ -1,7 +1,6 @@
 package com.cg.assetmanagementsystem.assetservice.controller;
 
 import com.cg.assetmanagementsystem.assetservice.dto.AssetDTO;
-import com.cg.assetmanagementsystem.assetservice.dto.EmployeeDTO;
 import com.cg.assetmanagementsystem.assetservice.entity.Asset;
 import com.cg.assetmanagementsystem.assetservice.exception.AssetDeletionException;
 import com.cg.assetmanagementsystem.assetservice.exception.AssetNotFoundException;
@@ -31,6 +30,10 @@ public class AssetController {
     private AssetService assetService;
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private Mapper mapper;
+    @Autowired
+    private Validator validator;
 
     @GetMapping(
             produces = "application/json"
@@ -59,7 +62,7 @@ public class AssetController {
         }
         List<AssetDTO> assetDTOS = new ArrayList<>();
         for(Asset asset:assets){
-            assetDTOS.add(Mapper.entityToDTO(asset,restTemplate));
+            assetDTOS.add(mapper.entityToDTO(asset));
         }
         return assetDTOS;
     }
@@ -74,7 +77,7 @@ public class AssetController {
     )
     public AssetDTO getAssetWithId(@ApiParam(value = "ID of the asset you wish to GET",required = true) @PathVariable("id") Integer assetId) throws AssetNotFoundException {
         Asset assetWithId =  assetService.getAssetById(assetId);
-        return  Mapper.entityToDTO(assetWithId,restTemplate);
+        return  mapper.entityToDTO(assetWithId);
     }
     @ApiOperation(value = "Add a new Asset to the database.")
     @PostMapping(
@@ -82,10 +85,10 @@ public class AssetController {
             headers = "Accept=application/json"
     )
     public AssetDTO addNewAsset(@ApiParam(value = "The Asset that you wish to add",required = true) @RequestBody AssetDTO newAssetDTO) throws InvalidRequestException{
-        Validator.validateInputData(newAssetDTO,restTemplate);
-        Asset newAsset = Mapper.dtoToEntity(newAssetDTO);
+        validator.validateInputData(newAssetDTO);
+        Asset newAsset = mapper.dtoToEntity(newAssetDTO);
         newAsset =  assetService.addNewAsset(newAsset);
-        return Mapper.entityToDTO(newAsset,restTemplate);
+        return mapper.entityToDTO(newAsset);
     }
     @ApiOperation(value = "Update the details of an existing Asset")
     @ApiResponses(value = {
@@ -107,9 +110,9 @@ public class AssetController {
         if(assetId!=modifiedAsset.getAssetId()){
             throw new InvalidRequestException("The id in the url path and the body of the request does not match.");
         }
-        Validator.validateInputData(modifiedAsset,restTemplate);
-        Asset asset = Mapper.dtoToEntity(modifiedAsset);
-        return Mapper.entityToDTO(assetService.updateAssetDetails(asset),restTemplate);
+        validator.validateInputData(modifiedAsset);
+        Asset asset = mapper.dtoToEntity(modifiedAsset);
+        return mapper.entityToDTO(assetService.updateAssetDetails(asset));
     }
     @ApiOperation(value = "DELETE an Asset in from the Database")
     @ApiResponses(value = {
@@ -123,7 +126,7 @@ public class AssetController {
             produces = "application/json"
     )
     public AssetDTO deleteAsset(@ApiParam(value = "ID of the Asset you wish to DELETE.",required = true) @PathVariable("id") Integer assetId) throws AssetNotFoundException, AssetDeletionException {
-        return Mapper.entityToDTO(assetService.deleteAsset(assetId),restTemplate);
+        return mapper.entityToDTO(assetService.deleteAsset(assetId));
     }
     @ApiOperation(value = "GET a report containing details of all Assets in the Database in the form of an Excel File")
     @ApiResponses(value = {

@@ -1,41 +1,32 @@
 package com.cg.assetmanagementsystem.requestservice.util;
 
-import com.cg.assetmanagementsystem.requestservice.dto.AssetDTO;
-import com.cg.assetmanagementsystem.requestservice.dto.EmployeeDTO;
 import com.cg.assetmanagementsystem.requestservice.dto.RequestDTO;
 import com.cg.assetmanagementsystem.requestservice.entity.Request;
-import com.cg.assetmanagementsystem.requestservice.exception.DataFetchException;
+import com.cg.assetmanagementsystem.requestservice.exception.InvalidRequestException;
+import com.cg.assetmanagementsystem.requestservice.service.RequestServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+@Component
 public class Mapper {
-    private static String employeeServiceURL = "http://employee-service/employees/";
-    private static String assetServiceURL = "http://asset-service/assets/";
-    public static RequestDTO entityToDTO(Request request,RestTemplate restTemplate){
+    /*@Autowired
+    private RequestServiceImpl requestService;*/
+    @Autowired
+    private FetchData fetchData;
+    public  RequestDTO entityToDTO(Request request) throws InvalidRequestException {
         RequestDTO requestDTO = new RequestDTO(
                 request.getRequestId(),
                 request.getRequestedFrom(),
                 request.getRequestedTill(),
                 request.getStatus()
         );
-        ResponseEntity<EmployeeDTO> responseEntityEmployee;
-        ResponseEntity<AssetDTO> responseEntityAsset;
-        try {
-            responseEntityEmployee = restTemplate.getForEntity(employeeServiceURL + request.getRequestedFor(), EmployeeDTO.class);
-            requestDTO.setRequestedFor(responseEntityEmployee.getBody());
-            responseEntityEmployee = restTemplate.getForEntity(employeeServiceURL+request.getRequestedBy(),EmployeeDTO.class);
-            requestDTO.setRequestedBy(responseEntityEmployee.getBody());
-            responseEntityAsset = restTemplate.getForEntity(assetServiceURL+request.getRequestedAsset(),AssetDTO.class);
-            requestDTO.setRequestedAsset(responseEntityAsset.getBody());
-        }
-        catch (HttpClientErrorException exception){
-            throw new DataFetchException("An error occurred when fetching data",exception);
-        }
+        requestDTO.setRequestedFor(fetchData.getFromEmployeeServiceEmployeeWithId(request.getRequestedFor()));
+        requestDTO.setRequestedBy(fetchData.getFromEmployeeServiceEmployeeWithId(request.getRequestedBy()));
+        requestDTO.setRequestedAsset(fetchData.getFromAssetServiceAssetWithId(request.getRequestedAsset()));
         return requestDTO;
     }
-    public static Request dtoToEntity(RequestDTO requestDTO){
+    public Request dtoToEntity(RequestDTO requestDTO){
         Request request = new Request(
                 requestDTO.getRequestedFrom(),
                 requestDTO.getRequestedTill(),

@@ -1,7 +1,11 @@
 package com.cg.assetmanagementsystem.requestservice.service;
 
 import com.cg.assetmanagementsystem.requestservice.dao.RequestDAO;
+import com.cg.assetmanagementsystem.requestservice.dto.AssetDTO;
+import com.cg.assetmanagementsystem.requestservice.dto.EmployeeDTO;
 import com.cg.assetmanagementsystem.requestservice.entity.Request;
+import com.cg.assetmanagementsystem.requestservice.exception.DataFetchException;
+import com.cg.assetmanagementsystem.requestservice.exception.InvalidRequestException;
 import com.cg.assetmanagementsystem.requestservice.exception.ReportGenerationException;
 import com.cg.assetmanagementsystem.requestservice.exception.RequestNotFoundException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -9,8 +13,11 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,11 +31,18 @@ import java.util.Optional;
 public class RequestServiceImpl implements RequestService {
     @Autowired
     private RequestDAO requestDAO;
+    /*@Autowired
+    private RestTemplate restTemplate;
+    private final String employeeServiceURL = "http://employee-service/employees/";
+    private final String assetServiceURL = "http://asset-service/assets/";*/
+
+    public RequestServiceImpl() {
+    }
+
     @Override
     public Request addNewRequest(Request newRequest) {
         return requestDAO.save(newRequest);
     }
-
     @Override
     public Request getRequestWithId(int requestId) throws RequestNotFoundException {
         Optional<Request> requestWithId = requestDAO.findById(requestId);
